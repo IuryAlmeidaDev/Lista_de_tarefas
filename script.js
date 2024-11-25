@@ -1,38 +1,55 @@
-// Seleciona elementos
+// Seletores
 const taskInput = document.getElementById('task-input');
 const addTaskBtn = document.getElementById('add-task-btn');
-const taskList = document.getElementById('task-list');
+const pendentesList = document.getElementById('pendentes-list');
+const concluidasList = document.getElementById('concluidas-list');
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
 
-// Adiciona evento ao botão
+// Alternância de tema
+themeToggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    themeToggleBtn.textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+});
+
+// Adicionar tarefa
 addTaskBtn.addEventListener('click', () => {
     const taskText = taskInput.value.trim();
 
     if (taskText === '') {
-        alert('Por favor, insira uma tarefa!');
+        alert('Digite uma tarefa antes de adicionar.');
         return;
     }
 
-    addTask(taskText);
-    taskInput.value = ''; // Limpa o campo de entrada
+    addTaskToList(taskText, pendentesList);
+    taskInput.value = '';
+    taskInput.focus();
 });
 
-// Função para adicionar tarefas
-function addTask(taskText) {
+// Adicionar tarefa na lista
+function addTaskToList(taskText, list) {
     const li = document.createElement('li');
-    li.innerHTML = `
-        <span>${taskText}</span>
-        <button class="remove-btn">Remover</button>
-    `;
+    li.textContent = taskText;
 
-    // Adiciona evento para marcar como concluída
-    li.querySelector('span').addEventListener('click', () => {
-        li.querySelector('span').classList.toggle('complete');
+    // Botão de concluir
+    const completeBtn = document.createElement('button');
+    completeBtn.textContent = '✔️';
+    completeBtn.className = 'complete-btn';
+    completeBtn.addEventListener('click', () => {
+        if (list === pendentesList) {
+            pendentesList.removeChild(li);
+            addTaskToList(taskText, concluidasList);
+        }
     });
 
-    // Adiciona evento para remover tarefa
-    li.querySelector('.remove-btn').addEventListener('click', () => {
-        taskList.removeChild(li);
+    // Botão de remover
+    const removeBtn = document.createElement('button');
+    removeBtn.textContent = '❌';
+    removeBtn.className = 'remove-btn';
+    removeBtn.addEventListener('click', () => {
+        list.removeChild(li);
     });
 
-    taskList.appendChild(li);
+    li.appendChild(completeBtn);
+    li.appendChild(removeBtn);
+    list.appendChild(li);
 }
